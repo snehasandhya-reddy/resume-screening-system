@@ -1,0 +1,5 @@
+Meera Rao
+Junior AI Engineer
+Skills: Python, machine learning, scikit-learn, NLP, sentence transformers, generative AI, RAG, vector databases, Flask, Git.
+Projects: Created a semantic search prototype, evaluated classification models, built a Flask API, and documented model limitations.
+Education: B.Tech in Artificial Intelligence.

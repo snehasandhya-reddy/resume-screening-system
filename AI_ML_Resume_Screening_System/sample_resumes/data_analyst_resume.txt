@@ -1,0 +1,5 @@
+Aarav Sharma
+Junior Data Analyst
+Skills: Python, SQL, pandas, NumPy, statistics, data analysis, data visualization, Tableau, Excel, Git.
+Projects: Built a sales dashboard, cleaned missing values in datasets, used pandas for exploratory data analysis, and communicated insights to stakeholders.
+Education: B.Tech in Computer Science.

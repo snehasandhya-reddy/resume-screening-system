@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentLens | AI Resume Screening</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">✳</span><span>talent<span class="brand-light">lens</span></span></div>
+    <div class="side-label">WORKSPACE</div>
+    <button class="nav-item active" type="button"><span>▦</span> Overview</button>
+    <button class="nav-item" type="button" id="scrollToInput"><span>＋</span> New screening</button>
+    <div class="sidebar-bottom">
+      <div class="status-dot"></div>
+      <div><b>AI + ML engine</b><small>Local prototype</small></div>
+    </div>
+  </aside>
+  <main class="main-content">
+    <header class="topbar">
+      <div><div class="eyebrow">TALENT INTELLIGENCE / WORKSPACE</div><h1>Resume Screening</h1></div>
+      <div class="top-actions"><span class="pill"><i></i> System ready</span><div class="avatar">TL</div></div>
+    </header>
+    <section class="welcome-row">
+      <div><h2>Find the right fit, <span>with context.</span></h2><p>Analyze resumes with semantic AI, skill coverage, and an experimental ML classifier.</p></div>
+      <button class="button secondary" id="demoBtn" type="button">✦ Load demo job description</button>
+    </section>
+    <section class="stats-grid" aria-label="Screening summary">
+      <article class="stat-card"><div class="stat-top"><span>Resumes analyzed</span><span class="stat-icon">▤</span></div><div class="stat-value" id="statCount">—</div><div class="stat-foot">Current screening session</div></article>
+      <article class="stat-card"><div class="stat-top"><span>Average match score</span><span class="stat-icon">◉</span></div><div class="stat-value" id="statAverage">—<small>%</small></div><div class="stat-foot">Transparent blended score</div></article>
+      <article class="stat-card"><div class="stat-top"><span>Top candidate score</span><span class="stat-icon">↗</span></div><div class="stat-value" id="statTop">—<small>%</small></div><div class="stat-foot" id="statTopName">Waiting for analysis</div></article>
+      <article class="stat-card"><div class="stat-top"><span>AI components</span><span class="stat-icon">✧</span></div><div class="stat-value">03</div><div class="stat-foot">Semantic · Skills · ML demo</div></article>
+    </section>
+    <section class="workspace-grid" id="inputSection">
+      <article class="panel job-panel">
+        <div class="panel-heading"><div><span class="step-label">01 / INPUT</span><h3>Job requirements</h3></div><span class="panel-icon">⌘</span></div>
+        <label for="jobDescription">Job description <span class="required">*</span></label>
+        <textarea id="jobDescription" rows="7" placeholder="Paste the job description, responsibilities, and required qualifications here…"></textarea>
+        <label for="requiredSkills">Required skills <span class="optional">Optional · comma separated</span></label>
+        <input id="requiredSkills" type="text" placeholder="Python, SQL, machine learning, Git">
+        <p class="field-help">If you enter skills here, they become the target skills for the skill-coverage score.</p>
+      </article>
+      <article class="panel upload-panel">
+        <div class="panel-heading"><div><span class="step-label">02 / CANDIDATES</span><h3>Add resumes</h3></div><span class="panel-icon">↥</span></div>
+        <label class="dropzone" id="dropzone" for="resumeFiles" tabindex="0" role="button" aria-label="Choose resume files or drag them here">
+          <input type="file" id="resumeFiles" accept=".pdf,.docx,.txt" multiple>
+          <span class="upload-symbol">↑</span><strong>Drop resumes here</strong><span class="drop-sub">or click to browse files</span>
+          <span class="file-types">PDF · DOCX · TXT <b>·</b> Max 10 files</span>
+        </label>
+        <div id="fileList" class="file-list"><div class="empty-files">No files selected yet</div></div>
+        <button class="button primary full" id="analyzeBtn" type="button"><span>✦</span> Analyze resumes <b>→</b></button>
+        <div class="privacy-note">⌑ Files are processed in memory by this local prototype.</div>
+      </article>
+    </section>
+    <div class="loading-bar" id="loadingBar" hidden><span class="spinner"></span><div><b>Analyzing candidate profiles…</b><small>Running semantic matching, skill analysis and ML scoring.</small></div></div>
+    <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+    <section id="resultsSection" class="results-section" hidden>
+      <div class="results-heading"><div><span class="step-label">03 / INSIGHTS</span><h2>Candidate overview</h2><p>Review the evidence behind every score before making decisions.</p></div><button class="button secondary" id="exportBtn" type="button">↓ Export CSV</button></div>
+      <div class="results-grid">
+        <article class="panel chart-panel"><div class="panel-heading"><div><h3>Score distribution</h3><p class="subheading">Blended prototype score by candidate</p></div></div><div class="chart-wrap"><canvas id="scoreChart" aria-label="Candidate scores chart"></canvas></div></article>
+        <article class="panel chart-panel"><div class="panel-heading"><div><h3>Score components</h3><p class="subheading">Top-ranked candidate</p></div></div><div class="chart-wrap doughnut-wrap"><canvas id="componentChart" aria-label="Top candidate score components chart"></canvas></div><div id="componentLegend" class="component-legend"></div></article>
+      </div>
+      <article class="panel table-panel">
+        <div class="panel-heading"><div><h3>Candidate ranking</h3><p class="subheading">Select a candidate to inspect matching evidence.</p></div><span class="sort-label">SORTED BY MATCH SCORE ↓</span></div>
+        <div class="table-wrap"><table><thead><tr><th>RANK</th><th>CANDIDATE FILE</th><th>OVERALL MATCH</th><th>SEMANTIC AI</th><th>SKILL COVERAGE</th><th>ML DEMO</th><th>DETAILS</th></tr></thead><tbody id="resultsBody"></tbody></table></div>
+      </article>
+      <article class="panel detail-panel" id="detailPanel"><div class="detail-placeholder"><span>⌕</span><div><b>Candidate insights</b><p>Select “View details” in the ranking table to inspect matched and missing skills.</p></div></div></article>
+      <div class="model-warning"><span>ⓘ</span><div><b>Prototype / responsible-use note</b><p id="modelNote">The demo ML classifier uses synthetic examples. Scores are exploratory signals, not validated hiring predictions. Do not use this prototype to automatically reject candidates.</p></div></div>
+      <div id="errorsBox" class="errors-box" hidden></div>
+    </section>
+    <footer><span>TalentLens · AI + ML Resume Screening Prototype</span><span>Built for learning and demonstration</span></footer>
+  </main>
+</div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
